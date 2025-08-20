@@ -19,30 +19,28 @@ public class SettingsTileView extends LinearLayout {
 
   public SettingsTileView(Context context) {
     super(context);
-    init(null);
+    // Attributes not provided; leave fields null for now.
   }
 
   public SettingsTileView(Context context, AttributeSet attrs) {
     super(context, attrs);
-    init(attrs);
+    readAttributes(attrs);
   }
 
   public SettingsTileView(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
-    init(attrs);
+    readAttributes(attrs);
   }
 
-  private void init(AttributeSet attrs) {
-    setupBasicLayoutConfiguration();
-
-    TypedArray array = getContext().obtainStyledAttributes(attrs, R.styleable.SettingsTileView);
-
-    mSettingsTile = array.getDrawable(R.styleable.SettingsTileView_tileImage);
-    mSettingsLabel = array.getText(R.styleable.SettingsTileView_tileLabel);
-
-    array.recycle();
-
-    inflate(getContext(), R.layout.settings_tile_view, this);
+  private void readAttributes(AttributeSet attrs) {
+    final TypedArray array =
+        getContext().obtainStyledAttributes(attrs, R.styleable.SettingsTileView);
+    try {
+      mSettingsTile = array.getDrawable(R.styleable.SettingsTileView_tileImage);
+      mSettingsLabel = array.getText(R.styleable.SettingsTileView_tileLabel);
+    } finally {
+      array.recycle();
+    }
   }
 
   private void setupBasicLayoutConfiguration() {
@@ -59,10 +57,19 @@ public class SettingsTileView extends LinearLayout {
   @Override
   protected void onFinishInflate() {
     super.onFinishInflate();
+
+    // Inflate child layout after construction to avoid 'this' escaping constructors
+    inflate(getContext(), R.layout.settings_tile_view, this);
+
     mImage = findViewById(R.id.tile_image);
-    mImage.setImageDrawable(mSettingsTile);
+    if (mSettingsTile != null) {
+      mImage.setImageDrawable(mSettingsTile);
+    }
     mLabel = findViewById(R.id.tile_label);
-    mLabel.setText(mSettingsLabel);
+    if (mSettingsLabel != null) {
+      mLabel.setText(mSettingsLabel);
+    }
+
     setupBasicLayoutConfiguration();
   }
 
