@@ -62,6 +62,12 @@ public class SettingsTileView extends LinearLayout {
     ensureInflated();
   }
 
+  @Override
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    ensureInflated();
+  }
+
   private void ensureInflated() {
     if (mInflated) return;
     mInflated = true;

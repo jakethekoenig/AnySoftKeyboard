@@ -37,6 +37,12 @@ public class ScrollViewAsMainChild extends ScrollView implements MainChild {
     ensureInflated();
   }
 
+  @Override
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    ensureInflated();
+  }
+
   private void ensureInflated() {
     if (mInflated) return;
     mInflated = true;
