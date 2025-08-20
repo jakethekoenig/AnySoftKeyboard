@@ -16,6 +16,8 @@ public class SettingsTileView extends LinearLayout {
   private ImageView mImage;
   private Drawable mSettingsTile;
   private CharSequence mSettingsLabel;
+  private AttributeSet mInitAttrs;
+  private boolean mInflated;
 
   public SettingsTileView(Context context) {
     super(context);
@@ -24,12 +26,12 @@ public class SettingsTileView extends LinearLayout {
 
   public SettingsTileView(Context context, AttributeSet attrs) {
     super(context, attrs);
-    readAttributes(attrs);
+    mInitAttrs = attrs;
   }
 
   public SettingsTileView(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
-    readAttributes(attrs);
+    mInitAttrs = attrs;
   }
 
   private void readAttributes(AttributeSet attrs) {
@@ -57,9 +59,19 @@ public class SettingsTileView extends LinearLayout {
   @Override
   protected void onFinishInflate() {
     super.onFinishInflate();
+    ensureInflated();
+  }
+
+  private void ensureInflated() {
+    if (mInflated) return;
+    mInflated = true;
 
     // Inflate child layout after construction to avoid 'this' escaping constructors
     inflate(getContext(), R.layout.settings_tile_view, this);
+
+    // Read any XML attributes that were passed to the constructor
+    readAttributes(mInitAttrs);
+    mInitAttrs = null;
 
     mImage = findViewById(R.id.tile_image);
     if (mSettingsTile != null) {

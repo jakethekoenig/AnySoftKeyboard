@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 public class ScrollViewAsMainChild extends ScrollView implements MainChild {
   private LinearLayout mItemsHolder;
   private View mBottomGap;
+  private boolean mInflated;
 
   public ScrollViewAsMainChild(Context context) {
     super(context);
@@ -33,6 +34,13 @@ public class ScrollViewAsMainChild extends ScrollView implements MainChild {
   @Override
   protected void onFinishInflate() {
     super.onFinishInflate();
+    ensureInflated();
+  }
+
+  private void ensureInflated() {
+    if (mInflated) return;
+    mInflated = true;
+
     // Inflate internal layout after the view is fully constructed to avoid 'this' escape
     inflate(getContext(), R.layout.scroll_view_internal, this);
 
@@ -52,6 +60,7 @@ public class ScrollViewAsMainChild extends ScrollView implements MainChild {
 
   @VisibleForTesting
   void onScrollChanged(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+    if (mItemsHolder == null) return;
     int childIndex;
     // hiding all the children that above the scroll Y
     for (childIndex = 0; childIndex < mItemsHolder.getChildCount(); childIndex++) {
@@ -82,6 +91,7 @@ public class ScrollViewAsMainChild extends ScrollView implements MainChild {
   }
 
   public void addListItem(@NonNull View view) {
+    ensureInflated();
     // this will insert the new view above the bottom gap view
     mItemsHolder.addView(view, mItemsHolder.getChildCount() - 1);
 
@@ -89,6 +99,7 @@ public class ScrollViewAsMainChild extends ScrollView implements MainChild {
   }
 
   public void removeAllListItems() {
+    ensureInflated();
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       setOnScrollChangeListener(null);
     }
@@ -101,6 +112,7 @@ public class ScrollViewAsMainChild extends ScrollView implements MainChild {
 
   @Override
   public void setBottomOffset(int offset) {
+    ensureInflated();
     // the extra padding is a child at the end of the list
     var lp = mBottomGap.getLayoutParams();
     lp.height = offset;
@@ -108,6 +120,7 @@ public class ScrollViewAsMainChild extends ScrollView implements MainChild {
   }
 
   public int getItemsCount() {
+    ensureInflated();
     return mItemsHolder.getChildCount() - 1;
   }
 }
