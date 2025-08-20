@@ -15,32 +15,27 @@ public class ScrollViewAsMainChild extends ScrollView implements MainChild {
 
   public ScrollViewAsMainChild(Context context) {
     super(context);
-    init();
   }
 
   public ScrollViewAsMainChild(Context context, AttributeSet attrs) {
     super(context, attrs);
-    init();
   }
 
   public ScrollViewAsMainChild(Context context, AttributeSet attrs, int defStyleAttr) {
     super(context, attrs, defStyleAttr);
-    init();
   }
 
   public ScrollViewAsMainChild(
       Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
     super(context, attrs, defStyleAttr, defStyleRes);
-    init();
-  }
-
-  private void init() {
-    inflate(getContext(), R.layout.scroll_view_internal, this);
   }
 
   @Override
   protected void onFinishInflate() {
     super.onFinishInflate();
+    // Inflate internal layout after the view is fully constructed to avoid 'this' escape
+    inflate(getContext(), R.layout.scroll_view_internal, this);
+
     mItemsHolder = findViewById(R.id.inner_layout);
     mBottomGap = findViewById(R.id.bottom_gap_view);
 
